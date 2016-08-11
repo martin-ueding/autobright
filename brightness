@@ -1,0 +1,150 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2016 Martin Ueding <dev@martin-ueding.de>
+# Licensed under The MIT License
+
+import argparse
+import subprocess
+import sys
+
+import numpy as np
+
+def linear(x, a, b, c):
+    #return a + b*x + c*x**2
+    return a * np.exp(b * x) + c
+
+
+def model():
+    import matplotlib.pyplot as pl
+    import scipy.optimize as op
+
+    read, write = list(zip(*[
+        (100, 0),
+        (690, 7),
+        (1244, 10),
+        (1400, 12),
+        (1700, 14),
+        (4400, 99),
+        #(12566, 100),
+        #(19058, 100),
+    ]))
+
+    read = np.array(read)
+    write = np.array(write)
+
+    fit_func = linear
+
+    popt, pconv = op.curve_fit(fit_func, read[write < 100], write[write < 100], p0=[1e-3, 1e-3, 0])
+    x = np.linspace(min(read), max(read), 100)
+    y = fit_func(x, *popt)
+
+    pl.plot(read, write, linestyle='none', marker='o')
+    pl.plot(x[y <= 100], y[y <= 100])
+    pl.xlabel('ColorHugALS Reading')
+    pl.ylabel('Screen brightness')
+    pl.grid(True)
+    pl.margins(0.05)
+    pl.tight_layout()
+    pl.savefig('brightness.pdf')
+
+    print(popt)
+
+    return lambda reading: fit_func(reading, *popt)
+
+def set_brightness(brightness, device):
+    if not 0 <= brightness <= 100:
+        print('Brightness must be between 0 and 100.')
+        sys.exit(1)
+
+    command = ['ddccontrol',
+               '-r', '0x10',
+               '-w', str(brightness),
+               'dev:/dev/i2c-' + device]
+
+    status = subprocess.call(command)
+
+    if status != 0:
+        print('ddccontrol failed but it might still have worked')
+
+
+def set_laptop_brightness(brightness):
+    return
+    command = ['xbacklight', '-set', str(max(10, brightness))]
+    subprocess.call(command)
+
+
+def read_colorhug_als():
+    command = ['colorhug-cmd', 'set-multiplier', '20']
+    subprocess.check_call(command)
+
+    command = ['colorhug-cmd', 'set-color-select', 'white']
+    subprocess.check_call(command)
+
+    command = ['colorhug-cmd', 'take-reading-raw']
+    output = subprocess.check_output(command).decode().strip()
+
+    command = ['colorhug-cmd', 'set-multiplier', '0']
+    subprocess.check_call(command)
+
+    words = output.split()
+
+    reading = int(words[1])
+
+    print('Just read {} from the ColorHugALS.'.format(reading))
+
+    return reading
+
+
+def auto_converter(reading):
+    #popt = [0.00850944, -0.13749395]
+    popt = [  8.73215023e+00,   5.69113822e-04,  -9]
+    out = linear(reading, *popt)
+
+    return max(min(out, 100), 0)
+
+
+def main():
+    options = _parse_args()
+
+    if options.model:
+        converter = model()
+        sys.exit(0)
+
+    if options.auto:
+        reading = read_colorhug_als()
+        set_to = auto_converter(reading)
+        print('I read {} and I will set to {}.'.format(reading, set_to))
+        for device in options.device:
+            set_brightness(set_to, device)
+        set_laptop_brightness(set_to)
+        sys.exit(0)
+
+    if options.brightness is None:
+        reading = read_colorhug_als()
+
+    else:
+        for device in options.device:
+            set_brightness(options.brightness, device)
+
+
+
+def _parse_args():
+    '''
+    Parses the command line arguments.
+
+    :return: Namespace with arguments.
+    :rtype: Namespace
+    '''
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--device', default=['7'], nargs='+')
+    parser.add_argument('--model', action='store_true')
+    parser.add_argument('--auto', action='store_true')
+    parser.add_argument('brightness', nargs='?', type=int)
+    options = parser.parse_args()
+
+    return options
+
+
+if __name__ == '__main__':
+    main()
