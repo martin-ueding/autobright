@@ -13,6 +13,10 @@ from . import ddccontrol
 def main_set(options):
     print(options)
 
+    if options.green is not None:
+        for device in options.device:
+            ddccontrol.set_maximum_color(options.red, options.green, options.blue, device)
+
     if options.brightness is None:
         reading = colorhugals.read()
         set_to = model.auto_converter(reading)
@@ -42,6 +46,9 @@ def _parse_args():
     parser_set = subparsers.add_parser('set', help='Manual brightness setting')
     parser_set.add_argument('--device', type=int, nargs='+', help='Device numbers for /dev/i2c-X')
     parser_set.add_argument('--brightness', type=int, help='Do not query ColorHugALS and use given brightness value')
+    parser_set.add_argument('--red', type=int)
+    parser_set.add_argument('--green', type=int)
+    parser_set.add_argument('--blue', type=int)
     parser_set.set_defaults(func=main_set)
 
     options = parser.parse_args()
