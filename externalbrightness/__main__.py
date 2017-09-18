@@ -11,12 +11,6 @@ from . import ddccontrol
 
 
 def main_set(options):
-    print(options)
-
-    if options.green is not None:
-        for device in options.device:
-            ddccontrol.set_maximum_color(options.red, options.green, options.blue, device)
-
     if options.brightness is None:
         reading = colorhugals.read()
         set_to = model.auto_converter(reading)
@@ -28,8 +22,13 @@ def main_set(options):
         ddccontrol.set_brightness(set_to, device)
 
 
-def main(options):
-    print(options)
+def main_color(options):
+    if options.green is not None:
+        for device in options.device:
+            ddccontrol.set_maximum_color(options.red, options.green, options.blue, device)
+
+
+def main(options): pass
 
 
 def _parse_args():
@@ -40,16 +39,19 @@ def _parse_args():
     :rtype: Namespace
     '''
     parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--device', type=int, nargs='+', help='Device numbers for /dev/i2c-X')
     parser.set_defaults(func=main)
+
     subparsers = parser.add_subparsers(title='Commands', help='Sub-command help')
 
     parser_set = subparsers.add_parser('set', help='Manual brightness setting')
-    parser_set.add_argument('--device', type=int, nargs='+', help='Device numbers for /dev/i2c-X')
     parser_set.add_argument('--brightness', type=int, help='Do not query ColorHugALS and use given brightness value')
     parser_set.add_argument('--red', type=int)
     parser_set.add_argument('--green', type=int)
     parser_set.add_argument('--blue', type=int)
     parser_set.set_defaults(func=main_set)
+
+    parser_color = subparsers.add_parser('color', help='Color profile settings')
 
     options = parser.parse_args()
     options.func(options)
