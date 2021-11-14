@@ -7,8 +7,7 @@ class DDCControl(Display):
     def __init__(self, device: int):
         self.device = device
 
-    def set_brightness(self, percent: float) -> None:
-        brightness = int(percent * 100)
+    def set_brightness(self, brightness: int) -> None:
         assert 0 <= brightness <= 100, "Brightness must be between 0 and 100."
 
         command = [

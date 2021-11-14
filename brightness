@@ -1,49 +1,4 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
 
-# Copyright © 2016 Martin Ueding <martin-ueding.de>
-# Licensed under The MIT License
-
-import argparse
-import subprocess
-import sys
-
-def model():
-    import matplotlib.pyplot as pl
-    import scipy.optimize as op
-
-    read, write = list(zip(*[
-        (100, 0),
-        (690, 7),
-        (1244, 10),
-        (1400, 12),
-        (1700, 14),
-        (4400, 99),
-        #(12566, 100),
-        #(19058, 100),
-    ]))
-
-    read = np.array(read)
-    write = np.array(write)
-
-    fit_func = linear
-
-    popt, pconv = op.curve_fit(fit_func, read[write < 100], write[write < 100], p0=[1e-3, 1e-3, 0])
-    x = np.linspace(min(read), max(read), 100)
-    y = fit_func(x, *popt)
-
-    pl.plot(read, write, linestyle='none', marker='o')
-    pl.plot(x[y <= 100], y[y <= 100])
-    pl.xlabel('ColorHugALS Reading')
-    pl.ylabel('Screen brightness')
-    pl.grid(True)
-    pl.margins(0.05)
-    pl.tight_layout()
-    pl.savefig('brightness.pdf')
-
-    print(popt)
-
-    return lambda reading: fit_func(reading, *popt)
 
 
 

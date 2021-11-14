@@ -1,0 +1,41 @@
+@startuml
+allowmixing
+
+package "core" {
+    interface Sensor {
+        +get_reading(): int
+    }
+    interface BrightnessModel {
+        +map(reading: int): int
+    }
+    interface Display {
+        +set_brightness(brightness: int)
+    }
+}
+
+class ColorHug
+class DDCControl
+class ProportionalBrightnessModel
+
+Sensor <|-- ColorHug
+BrightnessModel <|-- ProportionalBrightnessModel
+Display <|-- DDCControl
+
+class Measurements {
+__init__()
+path: pathlib.Path
+df: pd.DataFrame
+}
+
+usecase Web
+usecase CLI
+
+Web -up-> ColorHug
+Web -up-> DDCControl
+Web -up-> ProportionalBrightnessModel
+Web -up-> Measurements
+
+CLI -up-> ColorHug
+CLI -up-> DDCControl
+CLI -up-> ProportionalBrightnessModel
+@enduml
