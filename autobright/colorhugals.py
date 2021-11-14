@@ -1,7 +1,3 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# Copyright © 2016 Martin Ueding <martin-ueding.de>
-# Licensed under The MIT License
 import subprocess
 
 from autobright.core import Sensor
@@ -9,7 +5,6 @@ from autobright.core import Sensor
 
 class ColorHug(Sensor):
     def get_reading(self) -> float:
-
         command = ["colorhug-cmd", "set-multiplier", "20"]
         subprocess.check_call(command)
 
