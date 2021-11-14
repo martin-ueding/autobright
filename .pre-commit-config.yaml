@@ -10,15 +10,15 @@ repos:
         entry: poetry run black
         language: system
         files: '.*\.py'
-      - id: mypy
-        name: mypy
-        entry: poetry run mypy -p autobright
-        language: system
-        files: '.*\.py'
-        pass_filenames: false
-      - id: pytest
-        name: pytest
-        entry: poetry run pytest -vv autobright
-        pass_filenames: false
-        language: system
-        files: '.*\.py'
+#     - id: mypy
+#       name: mypy
+#       entry: mypy -p autobright
+#       language: system
+#       files: '.*\.py'
+#       pass_filenames: false
+#     - id: pytest
+#       name: pytest
+#       entry: pytest -vv autobright
+#       pass_filenames: false
+#       language: system
+#       files: '.*\.py'
