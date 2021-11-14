@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "external-screen-auto-brightness"
+name = "autobright"
 version = "0.1.0"
-description = ""
+description = "Automatically adjust display brightness with external sensor"
 authors = ["Martin Ueding <mu@martin-ueding.de>"]
 license = "MIT"
 
