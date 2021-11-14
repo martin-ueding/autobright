@@ -13,16 +13,24 @@ package "core" {
     }
 }
 
-class ColorHug
-class DDCControl
-class ProportionalBrightnessModel
+class ColorHug {
+        get_reading(): int
+}
+class DDCControl {
+        set_brightness(brightness: int)
+        device: int
+}
+class ProportionalBrightnessModel {
+        map(reading: int): int
+}
 
 Sensor <|-- ColorHug
 BrightnessModel <|-- ProportionalBrightnessModel
 Display <|-- DDCControl
 
 class Measurements {
-__init__()
+add_measurement(reading: int, brightness: int): None
+get_measurements(): pd.DataFrame
 path: pathlib.Path
 df: pd.DataFrame
 }
@@ -30,12 +38,11 @@ df: pd.DataFrame
 usecase Web
 usecase CLI
 
-Web -up-> ColorHug
-Web -up-> DDCControl
-Web -up-> ProportionalBrightnessModel
-Web -up-> Measurements
+Web --> Sensor
+Web --> Display
+Web --> Measurements
 
-CLI -up-> ColorHug
-CLI -up-> DDCControl
-CLI -up-> ProportionalBrightnessModel
+CLI --> Sensor
+CLI --> Display
+CLI --> BrightnessModel
 @enduml
