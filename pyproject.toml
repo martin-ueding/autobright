@@ -5,8 +5,13 @@ description = "Automatically adjust display brightness with external sensor"
 authors = ["Martin Ueding <mu@martin-ueding.de>"]
 license = "MIT"
 
+[tool.poetry.scripts]
+autobright = "autobright.__main__:main"
+
 [tool.poetry.dependencies]
 python = "^3.8"
+streamlit = "^1.2.0"
+altair = "^4.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

@@ -7,7 +7,7 @@ class Sensor(abc.ABC):
         raise NotImplementedError()
 
 
-class Mapping(abc.ABC):
+class BrightnessModel(abc.ABC):
     @abc.abstractmethod
     def map(self, reading: float) -> float:
         raise NotImplementedError()
