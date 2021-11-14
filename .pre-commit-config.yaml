@@ -1,0 +1,24 @@
+repos:
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.5.0
+    hooks:
+      - id: reorder-python-imports
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: poetry run black
+        language: system
+        files: '.*\.py'
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy -p src.vigilant_crypto_snatch
+        language: system
+        files: '.*\.py'
+        pass_filenames: false
+      - id: pytest
+        name: pytest
+        entry: poetry run pytest -vv src
+        pass_filenames: false
+        language: system
+        files: '.*\.py'
