@@ -22,6 +22,14 @@ def adjust() -> None:
 
 
 @main.command()
+def read() -> None:
+    sensor = ColorHug()
+    for i in range(10):
+        reading = sensor.get_reading()
+        print(reading)
+
+
+@main.command()
 def web_ui() -> None:
     from autobright.webui import main as webui_main
 
