@@ -10,9 +10,10 @@ autobright = "autobright.__main__:main"
 autobright-qt = "autobright.qtgui:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8,<3.11"
 appdirs = "^1.4.4"
 PyQt6 = "^6.3.0"
+scipy = "^1.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
