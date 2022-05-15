@@ -11,16 +11,14 @@ from PyQt6.QtWidgets import QSlider
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QWidget
 
+from autobright.config import TomlConfig
 from autobright.ddccontrol import DDCControl
 
 
 class GuiState:
     def __init__(self):
-        pass
-
-    def set_device(self, devices: List[int]) -> None:
-        print(f"Setting displays to {devices}.")
-        self.displays = [DDCControl(device) for device in devices]
+        self.config = TomlConfig()
+        self.displays = self.config.make_ddccontrol()
 
     def set_brightness(self, brightness: int) -> None:
         print(f"Setting brightness to {brightness}.")
@@ -35,11 +33,6 @@ class Window(QWidget):
         self.setWindowTitle("Autobright")
         layout = QVBoxLayout()
         self.setLayout(layout)
-        line_edit = QLineEdit()
-        line_edit.editingFinished.connect(
-            lambda: gui_state.set_device([int(x) for x in line_edit.text().split()])
-        )
-        layout.addWidget(line_edit)
         slider = QSlider(Qt.Orientation.Horizontal, self)
         slider.setMaximum(100)
         layout.addWidget(slider)
