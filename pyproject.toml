@@ -7,6 +7,7 @@ license = "MIT"
 
 [tool.poetry.scripts]
 autobright = "autobright.__main__:main"
+autobright-qt = "autobright.qtgui:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -14,6 +15,7 @@ streamlit = "^1.2.0"
 altair = "^4.1.0"
 pandas = "^1.3.4"
 appdirs = "^1.4.4"
+PyQt6 = "^6.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
