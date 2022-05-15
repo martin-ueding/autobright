@@ -19,6 +19,7 @@ from autobright.colorhugals import ColorHug
 from autobright.config import TomlConfig
 from autobright.ddccontrol import DDCControl
 from autobright.measurements import Measurements
+from autobright.models import SplineModel
 
 
 class GuiState:
@@ -26,6 +27,7 @@ class GuiState:
         self.config = TomlConfig()
         self.displays = self.config.make_ddccontrol()
         self.measurements = Measurements()
+        self.model = SplineModel()
         try:
             self.sensor = ColorHug()
         except subprocess.CalledProcessError:
@@ -57,6 +59,10 @@ class GuiState:
         myself = self.thread
         while self.thread is not None and self.thread is myself:
             print("Auto!")
+            reading = self.sensor.get_reading()
+            brightness = self.model.map(reading)
+            for display in self.displays:
+                display.set_brightness(brightness)
             time.sleep(5)
         print("Thread exists")
 
