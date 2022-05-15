@@ -21,6 +21,8 @@ class ColorHug(Sensor):
         subprocess.run(command, check=True)
         time.sleep(0.03)
 
+        self.get_reading()
+
     def get_reading(self) -> int:
         reading = None
         while not reading:

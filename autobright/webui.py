@@ -12,7 +12,10 @@ from autobright.models import ProportionalBrightnessModel
 
 def ui():
     sensor = ColorHug()
-    display = DDCControl(7)
+    device_str = st.text_input("i2c Device")
+    if not device_str:
+        return
+    display = DDCControl(int(device_str))
     model = ProportionalBrightnessModel()
     measurements = Measurements()
 

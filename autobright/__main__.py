@@ -2,6 +2,7 @@ import click
 
 from autobright.colorhugals import ColorHug
 from autobright.ddccontrol import DDCControl
+from autobright.measurements import Measurements
 from autobright.models import ProportionalBrightnessModel
 
 
@@ -27,6 +28,18 @@ def read() -> None:
     for i in range(10):
         reading = sensor.get_reading()
         print(reading)
+
+
+@main.command()
+def measure() -> None:
+    sensor = ColorHug()
+    display = DDCControl(9)
+    measurements = Measurements()
+
+    brightness = display.get_brightness()
+    reading = sensor.get_reading()
+    print(f'Brightness: {brightness}, Reading: {reading}')
+    measurements.add_measurement(reading, brightness)
 
 
 @main.command()
