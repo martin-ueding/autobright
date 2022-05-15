@@ -9,8 +9,6 @@ from autobright.measurements import Measurements
 class DDCControl(Display):
     def __init__(self, device: int):
         self.device = device
-        self.measurements = Measurements()
-        self.sensor = ColorHug()
 
     def set_brightness(self, brightness: int) -> None:
         assert 0 <= brightness <= 100, "Brightness must be between 0 and 100."

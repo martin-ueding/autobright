@@ -1,9 +1,13 @@
+import subprocess
 import sys
+import threading
+import time
 from typing import List
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QCheckBox
 from PyQt6.QtWidgets import QLabel
 from PyQt6.QtWidgets import QLineEdit
 from PyQt6.QtWidgets import QPushButton
@@ -22,7 +26,11 @@ class GuiState:
         self.config = TomlConfig()
         self.displays = self.config.make_ddccontrol()
         self.measurements = Measurements()
-        self.sensor = ColorHug()
+        try:
+            self.sensor = ColorHug()
+        except subprocess.CalledProcessError:
+            self.sensor = None
+        self.thread = None
 
     def set_brightness(self, brightness: int) -> None:
         print(f"Setting brightness to {brightness}.")
@@ -30,10 +38,27 @@ class GuiState:
             display.set_brightness(brightness)
 
     def store_brightness(self, brightness: int) -> None:
+        if self.sensor is None:
+            return
         print(f"Storing brightness to {brightness}.")
         reading = self.sensor.get_reading()
         print(f"Read {reading} from the sensor.")
         self.measurements.add_measurement(reading, brightness)
+
+    def checkbox_changed(self, checked: bool) -> None:
+        print(checked)
+        if checked:
+            self.thread = threading.Thread(target=self.auto)
+            self.thread.start()
+        else:
+            self.thread = None
+
+    def auto(self) -> None:
+        myself = self.thread
+        while self.thread is not None and self.thread is myself:
+            print("Auto!")
+            time.sleep(5)
+        print("Thread exists")
 
 
 class Window(QWidget):
@@ -55,6 +80,9 @@ class Window(QWidget):
         button = QPushButton("Store measurement")
         layout.addWidget(button)
         button.clicked.connect(lambda: gui_state.store_brightness(slider.value()))
+        checkbox = QCheckBox("Auto", self)
+        checkbox.clicked.connect(gui_state.checkbox_changed)
+        layout.addWidget(checkbox)
 
 
 def set_value(value):

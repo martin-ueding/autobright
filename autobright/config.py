@@ -5,6 +5,7 @@ import appdirs
 import tomli
 
 from autobright.ddccontrol import DDCControl
+from autobright.models import SplineModel
 
 
 class TomlConfig:
@@ -18,3 +19,8 @@ class TomlConfig:
 
     def make_ddccontrol(self) -> List[DDCControl]:
         return [DDCControl(device) for device in self.config["ddccontrol"]["devices"]]
+
+    def make_spline_model(self) -> SplineModel:
+        return SplineModel(
+            self.config["spline_model"]["x"], self.config["spline_model"]["y"]
+        )
