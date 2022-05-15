@@ -11,19 +11,29 @@ from PyQt6.QtWidgets import QSlider
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QWidget
 
+from autobright.colorhugals import ColorHug
 from autobright.config import TomlConfig
 from autobright.ddccontrol import DDCControl
+from autobright.measurements import Measurements
 
 
 class GuiState:
     def __init__(self):
         self.config = TomlConfig()
         self.displays = self.config.make_ddccontrol()
+        self.measurements = Measurements()
+        self.sensor = ColorHug()
 
     def set_brightness(self, brightness: int) -> None:
         print(f"Setting brightness to {brightness}.")
         for display in self.displays:
             display.set_brightness(brightness)
+
+    def store_brightness(self, brightness: int) -> None:
+        print(f"Storing brightness to {brightness}.")
+        reading = self.sensor.get_reading()
+        print(f"Read {reading} from the sensor.")
+        self.measurements.add_measurement(reading, brightness)
 
 
 class Window(QWidget):
@@ -42,6 +52,9 @@ class Window(QWidget):
         button = QPushButton("Set")
         layout.addWidget(button)
         button.clicked.connect(lambda: gui_state.set_brightness(slider.value()))
+        button = QPushButton("Store measurement")
+        layout.addWidget(button)
+        button.clicked.connect(lambda: gui_state.store_brightness(slider.value()))
 
 
 def set_value(value):
