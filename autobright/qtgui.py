@@ -27,7 +27,7 @@ class GuiState:
         self.config = TomlConfig()
         self.displays = self.config.make_ddccontrol()
         self.measurements = Measurements()
-        self.model = SplineModel()
+        self.model = self.config.make_spline_model()
         try:
             self.sensor = ColorHug()
         except subprocess.CalledProcessError:
